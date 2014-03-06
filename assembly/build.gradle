@@ -1,0 +1,48 @@
+apply plugin: 'fabric3-distribution'
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath group: 'org.codehaus.fabric3.gradle', name: 'fabric3-distribution', version: fabric3Version
+    }
+
+}
+
+jar.enabled false
+
+configurations {
+    bin
+    lib
+}
+
+dependencies {
+    bin(project(':cli')) {
+        transitive false;
+    }
+
+    lib(project(':interpreter'))
+}
+
+
+distributions {
+    main {
+        baseName 'fabric3-cli'
+        contents {
+            into('bin') {
+                from(project.configurations.bin)
+                fileMode 0755
+                rename { 'f3.jar' }
+            }
+
+            into('lib') {
+                from(project.configurations.lib)
+            }
+
+            into('').from('src/main')
+        }
+    }
+
+}

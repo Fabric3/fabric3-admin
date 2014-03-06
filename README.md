@@ -1,7 +1,7 @@
-Fabric3 Gradle Plugins
-=========================
+Fabric3 Command Line Interface
+===============================
 
-This repository hosts code for the Fabric3 core Gradle plugins. Further information on can be found at http://www.fabric3.org.
+This repository hosts code for the Fabric3 command line interface. Further information on can be found at http://www.fabric3.org.
 
 
 Building the Source

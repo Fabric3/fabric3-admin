@@ -3,7 +3,7 @@
  */
 project.description = 'Fabric3 Command Line Interface'
 
-defaultTasks 'clean', 'assemble', 'install'
+defaultTasks 'clean', 'assemble', 'install', 'distZip'
 
 allprojects {
     repositories {
@@ -23,19 +23,26 @@ configure(distributions()) {
     apply plugin: 'maven'
     apply plugin: 'signing'
 
-    group = 'org.codehaus.fabric3.gradle'
+
+    group = fabric3Group
+    jar {
+        archiveName = "fabric3-${baseName}-${version}.${extension}"
+    }
 
     dependencies {
-        testCompile 'junit:junit:4.5'
+        testCompile group: 'junit', name: 'junit', version: junitVersion
+        testCompile group: 'org.easymock', name: 'easymock', version: easyMockVersion
     }
 
     task sourcesJar(type: Jar) {
         classifier = 'sources'
+        archiveName = "fabric3-${baseName}-${version}-${classifier}.${extension}"
         from sourceSets.main.allSource
     }
 
     task docJar(type: Jar, dependsOn: javadoc) {
         classifier = 'docs'
+        archiveName = "fabric3-${baseName}-${version}-${classifier}.${extension}"
         from javadoc.destinationDir
     }
 
