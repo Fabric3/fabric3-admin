@@ -1,8 +1,11 @@
 /**
  * Build for the Fabric3 command line admin interface.
  * <p/>
- * By default, deploy projects will be installed in the local Maven repo. To deploy to the CodeHaus Nexus snapshot repository,
- * execute the 'uploadArchives' task. To deploy to the CodeHaus Nexus release staging repository, change the version and execute the 'uploadArchives' task.
+ * By default, deploy project binaries, Javadoc and sources will be installed in the local Maven repo. To only build binaries and skip generating Javadoc and
+ * source archives, pass the <code>skipSources<code> parameter to Gradle: gradlew -PskipSources
+ * <p/>
+ * To deploy to the CodeHaus Nexus snapshot repository, execute the 'uploadArchives' task. To deploy to the CodeHaus Nexus release staging repository,
+ * change the version and execute the 'uploadArchives' task.
  * <p/>
  * Note the 'uploadArchives' tasks requires a gradle.properties file to be present containing private key information and authentication parameters
  * (codehausUsername and codehausPassword).
@@ -40,6 +43,10 @@ configure(deployProjects()) {
     dependencies {
         testCompile group: 'junit', name: 'junit', version: junitVersion
         testCompile group: 'org.easymock', name: 'easymock', version: easyMockVersion
+    }
+
+    if (project.hasProperty("skipSources")) {
+        return
     }
 
     task sourcesJar(type: Jar) {
