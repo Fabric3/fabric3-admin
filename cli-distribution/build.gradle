@@ -11,12 +11,15 @@ buildscript {
 
 }
 
-jar.enabled false
 
 configurations {
     bin
     lib
 }
+artifacts {
+    archives distZip
+}
+
 
 dependencies {
     bin(project(':cli')) {
@@ -27,9 +30,17 @@ dependencies {
 }
 
 
+install.repositories.mavenInstaller.pom.whenConfigured { pom ->
+    pom.project { project ->
+        description 'Fabric3 Command Line Interface Distribution'
+        packaging 'pom'
+    }
+}
+
+
 distributions {
     main {
-        baseName 'fabric3-cli'
+        baseName 'fabric3-cli-distribution'
         contents {
             into('bin') {
                 from(project.configurations.bin)

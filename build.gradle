@@ -1,7 +1,14 @@
 /**
- * Build for the Fabric3 command line admin interface
+ * Build for the Fabric3 command line admin interface.
+ * <p/>
+ * By default, deploy projects will be installed in the local Maven repo. To deploy to the CodeHaus Nexus snapshot repository,
+ * execute the 'uploadArchives' task. To deploy to the CodeHaus Nexus release staging repository, change the version and execute the 'uploadArchives' task.
+ * <p/>
+ * Note the 'uploadArchives' tasks requires a gradle.properties file to be present containing private key information and authentication parameters
+ * (codehausUsername and codehausPassword).
+ *
  */
-project.description = 'Fabric3 Command Line Interface'
+project.description 'Fabric3 Command Line Interface'
 
 defaultTasks 'clean', 'assemble', 'install', 'distZip'
 
@@ -13,20 +20,21 @@ allprojects {
 
 }
 
-def distributions() {
-    // define projects that are distributions, i.e. they contain source files; project parent directories will be ignored
+def deployProjects() {
+    // define projects that are deployed to Maven Central, i.e. they contain source files; project parent directories will be ignored
     return subprojects.findAll { new File(it.projectDir, "src").exists() }
 }
 
-configure(distributions()) {
+configure(deployProjects()) {
+    group = fabric3Group
+    def releaseBuild = !version.endsWith('SNAPSHOT');
+
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'signing'
 
-
-    group = fabric3Group
     jar {
-        archiveName = "fabric3-${baseName}-${version}.${extension}"
+        baseName "fabric3-${baseName}"
     }
 
     dependencies {
@@ -35,40 +43,78 @@ configure(distributions()) {
     }
 
     task sourcesJar(type: Jar) {
-        classifier = 'sources'
-        archiveName = "fabric3-${baseName}-${version}-${classifier}.${extension}"
+        baseName "fabric3-${baseName}"
+        classifier 'sources'
         from sourceSets.main.allSource
     }
 
     task docJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'docs'
-        archiveName = "fabric3-${baseName}-${version}-${classifier}.${extension}"
+        baseName "fabric3-${baseName}"
+        classifier 'javadoc'
         from javadoc.destinationDir
     }
 
     artifacts {
+        archives jar
         archives sourcesJar
         archives docJar
     }
 
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-//                repository(url: 'file:./maven')
+    install.repositories.mavenInstaller.pom.whenConfigured { pom ->
+        pom.project { project ->
+            scm {
+                url 'scm:git@github.com:Fabric3/fabric-admin.git'
+                connection 'scm:git@github.com:Fabric3/fabric-admin.git'
+                developerConnection 'scm:git@github.com:Fabric3/fabric-admin.git'
+            }
+
+            licenses {
+                license {
+                    name 'GNU + Classpath Exception'
+                    url 'http://www.fabric3.org/license.html'
+                    distribution 'repo'
+                }
+            }
+
+            developers {
+                developer {
+                    id 'fabric3'
+                    name 'Fabric3 Project'
+                }
             }
         }
     }
 
-    signing {
-        required {
-            !version.endsWith('SNAPSHOT') && gradle.taskGraph.hasTask('uploadArchives')
+    uploadArchives {
+        repositories {
+            if (releaseBuild) {
+                mavenDeployer {
+                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                    repository(url: "https://nexus.codehaus.org/service/local/staging/deploy/maven2/") {
+                        authentication(userName: codehausUsername, password: codehausPassword)
+                    }
+
+                }
+            } else {
+                mavenDeployer {
+                    beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                    repository(url: "https://nexus.codehaus.org/content/repositories/snapshots/") {
+                        authentication(userName: codehausUsername, password: codehausPassword)
+                    }
+                }
+            }
         }
-        sign configurations.archives
+        signing {
+            sign configurations.archives
+        }
+
     }
 
 
-}
+    task wrapper(type: Wrapper) {
+        gradleVersion = '1.11'
+    }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.11'
 }

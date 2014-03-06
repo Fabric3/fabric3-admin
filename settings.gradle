@@ -1,4 +1,4 @@
 rootProject.name = 'fabric3-admin'
 
-include ':interpreter', ':cli', ':assembly'
+include ':interpreter', ':cli', ':cli-distribution'
 
