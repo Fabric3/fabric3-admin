@@ -70,9 +70,9 @@ configure(deployProjects()) {
     install.repositories.mavenInstaller.pom.whenConfigured { pom ->
         pom.project { project ->
             scm {
-                url 'scm:git@github.com:Fabric3/fabric-admin.git'
-                connection 'scm:git@github.com:Fabric3/fabric-admin.git'
-                developerConnection 'scm:git@github.com:Fabric3/fabric-admin.git'
+                url 'scm:git@github.com:Fabric3/fabric3-admin.git'
+                connection 'scm:git@github.com:Fabric3/fabric3-admin.git'
+                developerConnection 'scm:git@github.com:Fabric3/fabric3-admin.git'
             }
 
             licenses {
