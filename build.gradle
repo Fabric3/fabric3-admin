@@ -120,8 +120,9 @@ configure(deployProjects()) {
     }
 
 
-    task wrapper(type: Wrapper) {
-        gradleVersion = '1.11'
-    }
-
 }
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.11'
+}
+
