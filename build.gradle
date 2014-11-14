@@ -5,8 +5,12 @@
  * source archives, pass the <code>skipSources<code> parameter to Gradle: gradlew -PskipSources
  * <p/>
  * To deploy to the Nexus release staging repository, change the version and execute:
- * <code>./gradlew -Pbuild=deploy -Dcom.sun.net.ssl.rsaPreMasterSecretFix=true</code>
- * after a full build has been run. Note the 'rsaPreMasterSecretFix' parameter is required as a workaround for this JDK bug:
+ * <code>./gradlew </code>
+ *
+ * Followed by:
+ * <code>./gradlew -Dcom.sun.net.ssl.rsaPreMasterSecretFix=true uploadArchives</code>
+ *
+ * Note the 'rsaPreMasterSecretFix' parameter is required as a workaround for this JDK bug:
  * https://bugs.openjdk.java.net/browse/JDK-8030806
  *
  * Note the 'uploadArchives' tasks requires a gradle.properties file to be present containing private key information and authentication parameters
@@ -33,7 +37,6 @@ def deployProjects() {
 configure(deployProjects()) {
     group = fabric3Group
     def releaseBuild = !version.endsWith('SNAPSHOT');
-
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'signing'
