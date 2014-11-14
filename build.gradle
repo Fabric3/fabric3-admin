@@ -14,26 +14,8 @@
  */
 project.description 'Fabric3 Command Line Interface'
 
-//defaultTasks 'clean', 'assemble', 'install', 'distZip'
+defaultTasks 'clean', 'assemble', 'install', 'distZip'
 
-if (hasProperty('build')) {
-    ext.build = project['build']
-} else {
-    ext.build = 'default';
-}
-if (ext.build == 'deploy') {
-    defaultTasks 'distZip', 'uploadArchives'
-} else {
-    defaultTasks 'clean', 'assemble', 'install','distZip'
-}
-
-if (!hasProperty('sonatypeUsername')) {
-    project.ext.sonatypeUsername = "undefined"
-}
-
-if (!hasProperty('sonatypePassword')) {
-    project.ext.sonatypePassword = "undefined"
-}
 
 allprojects {
     repositories {
@@ -43,26 +25,26 @@ allprojects {
 
 }
 
-def distributions() {
-    // define projects that are distributions, i.e. they contain source files; project parent directories will be ignored
+def deployProjects() {
+    // define projects that are deployed to Maven Central, i.e. they contain source files; project parent directories will be ignored
     return subprojects.findAll { new File(it.projectDir, "src").exists() }
 }
 
-configure(distributions()) {
+configure(deployProjects()) {
     group = fabric3Group
-    version = fabric3Version
     def releaseBuild = !version.endsWith('SNAPSHOT');
 
     apply plugin: 'java'
     apply plugin: 'maven'
     apply plugin: 'signing'
 
-    sourceCompatibility = 1.7
-    targetCompatibility = 1.7
+    jar {
+        baseName "fabric3-${baseName}"
+    }
 
     dependencies {
-        compile gradleApi()
-        testCompile 'junit:junit:4.5'
+        testCompile group: 'junit', name: 'junit', version: junitVersion
+        testCompile group: 'org.easymock', name: 'easymock', version: easyMockVersion
     }
 
     if (project.hasProperty("skipSources")) {
@@ -70,11 +52,13 @@ configure(distributions()) {
     }
 
     task sourcesJar(type: Jar) {
+        baseName "fabric3-${baseName}"
         classifier 'sources'
         from sourceSets.main.allSource
     }
 
     task docJar(type: Jar, dependsOn: javadoc) {
+        baseName "fabric3-${baseName}"
         classifier 'javadoc'
         from javadoc.destinationDir
     }
@@ -90,10 +74,11 @@ configure(distributions()) {
             url 'http://fabric3.org'
             name 'Fabric3'
             description 'Fabric3'
+
             scm {
                 url 'scm:git@github.com:Fabric3/fabric3-admin.git'
-                connection 'scm:git@github.com:Fabric3/fabric3-admin'
-                developerConnection 'scm:git@github.com:Fabric3/fabric3-admin'
+                connection 'scm:git@github.com:Fabric3/fabric3-admin.git'
+                developerConnection 'scm:git@github.com:Fabric3/fabric3-admin.git'
             }
 
             licenses {
@@ -149,8 +134,8 @@ configure(distributions()) {
                             }
                         }
                     }
-                }
 
+                }
             } else {
                 mavenDeployer {
                     beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
@@ -161,13 +146,15 @@ configure(distributions()) {
                 }
             }
         }
-
         signing {
-            required { releaseBuild && (build == 'full' || build == 'deploy') }
             sign configurations.archives
         }
+
     }
+
+
 }
+
 task wrapper(type: Wrapper) {
     gradleVersion = '1.11'
 }
