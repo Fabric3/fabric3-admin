@@ -69,6 +69,10 @@ configure(deployProjects()) {
 
     install.repositories.mavenInstaller.pom.whenConfigured { pom ->
         pom.project { project ->
+            url 'http://fabric3.org'
+            name 'Fabric3'
+            description 'Fabric3'
+
             scm {
                 url 'scm:git@github.com:Fabric3/fabric3-admin.git'
                 connection 'scm:git@github.com:Fabric3/fabric3-admin.git'
@@ -77,7 +81,7 @@ configure(deployProjects()) {
 
             licenses {
                 license {
-                    name 'GNU + Classpath Exception'
+                    name 'Apache 2'
                     url 'http://www.fabric3.org/license.html'
                     distribution 'repo'
                 }
@@ -100,6 +104,33 @@ configure(deployProjects()) {
 
                     repository(url: "https://nexus.codehaus.org/service/local/staging/deploy/maven2/") {
                         authentication(userName: codehausUsername, password: codehausPassword)
+                    }
+
+                    pom.project {
+                        url 'http://fabric3.org'
+                        name 'Fabric3'
+                        description 'Fabric3'
+
+                        scm {
+                            url 'scm:git@github.com:Fabric3/fabric3-admin.git'
+                            connection 'scm:git@github.com:Fabric3/fabric3-admin.git'
+                            developerConnection 'scm:git@github.com:Fabric3/fabric3-admin.git'
+                        }
+
+                        licenses {
+                            license {
+                                name 'Apache 2'
+                                url 'http://www.fabric3.org/license.html'
+                                distribution 'repo'
+                            }
+                        }
+
+                        developers {
+                            developer {
+                                id 'fabric3'
+                                name 'Fabric3 Project'
+                            }
+                        }
                     }
 
                 }

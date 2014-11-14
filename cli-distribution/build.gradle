@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'org.codehaus.fabric3.gradle', name: 'fabric3-distribution', version: fabric3Version
+        classpath group: 'org.fabric3.gradle', name: 'fabric3-distribution', version: fabric3Version
     }
 
 }
