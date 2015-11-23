@@ -56,6 +56,8 @@ public class DomainConnectionImpl implements DomainConnection {
     private String username;
     private String password;
 
+    private int connectionTimeout;
+
     private ObjectMapper mapper;
     private SSLSocketFactory sslFactory;
 
@@ -66,6 +68,12 @@ public class DomainConnectionImpl implements DomainConnection {
         addresses = new LinkedList<>();
         aliases.add("default");
         addresses.add(ADDRESS);
+
+        try {
+            connectionTimeout = Integer.parseInt(System.getProperty("fabric3.timeout", "-1"));
+        } catch (NumberFormatException e) {
+            System.out.println("ERROR: Invalid connection timeout. Ignoring");
+        }
     }
 
     public void setAddress(String alias, String address) {
@@ -128,6 +136,9 @@ public class DomainConnectionImpl implements DomainConnection {
         try {
             URL url = createUrl(addresses.getLast() + path);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            if (connectionTimeout > 0) {
+                connection.setConnectTimeout(connectionTimeout);
+            }
             connection.setChunkedStreamingMode(4096);
             connection.setDoOutput(true);
             connection.setDoInput(true);
@@ -167,6 +178,9 @@ public class DomainConnectionImpl implements DomainConnection {
         try {
             URL url = createUrl(address + path);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            if (connectionTimeout > 0) {
+                connection.setConnectTimeout(connectionTimeout);
+            }
             connection.setDoOutput(true);
             connection.setDoInput(true);
             connection.setRequestMethod(verb);

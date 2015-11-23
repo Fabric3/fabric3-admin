@@ -30,7 +30,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.jar.JarFile;
 
-
 /**
  * Launcher for the domain administration command line tool.
  */
@@ -39,9 +38,10 @@ public class Main {
 
     /**
      * Executes either a single instruction passed from the command line or enters into interactive mode.
-     * <p/>
-     * The interpreter is loaded in a child classloader so the contents of the /lib directory can be dynamically placed on the classpath. This allows
-     * the interpreter to be extended.
+     *
+     *
+     * The interpreter is loaded in a child classloader so the contents of the /lib directory can be dynamically placed on the classpath. This allows the
+     * interpreter to be extended.
      *
      * @param args the instruction to execute or an empty array
      * @throws Exception if there is an error executing the instruction or entering interactive mode
@@ -101,8 +101,8 @@ public class Main {
     }
 
     /**
-     * Returns the location of the settings.xml file by introspecting the location of the current class. It is assumed the settings file is contained
-     * in a sibling directory named "config".
+     * Returns the location of the settings.xml file by introspecting the location of the current class. It is assumed the settings file is contained in a
+     * sibling directory named "config".
      *
      * @return the location of the settings file
      * @throws IllegalStateException if the class cannot be introspected
@@ -139,8 +139,8 @@ public class Main {
     }
 
     /**
-     * Create a classloader from all the jar files lib directory. The classpath for the returned classloader will comprise all jar files and
-     * sub-directories of the supplied directory. Hidden files and those that do not contain a valid manifest will be silently ignored.
+     * Create a classloader from all the jar files lib directory. The classpath for the returned classloader will comprise all jar files and sub-directories of
+     * the supplied directory. Hidden files and those that do not contain a valid manifest will be silently ignored.
      *
      * @param parent the parent for the new classloader
      * @return a classloader whose classpath includes all jar files and sub-directories of the supplied directory
@@ -207,6 +207,5 @@ public class Main {
         File jarFile = new File(URI.create(jarLocation));
         return new File(jarFile.getParentFile().getParentFile(), "lib");
     }
-
 
 }
