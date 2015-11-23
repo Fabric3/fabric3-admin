@@ -29,7 +29,6 @@ import jline.console.completer.ArgumentCompleter;
 import jline.console.completer.Completer;
 import jline.console.completer.FileNameCompleter;
 import jline.console.completer.StringsCompleter;
-
 import org.fabric3.admin.interpreter.Command;
 import org.fabric3.admin.interpreter.CommandException;
 import org.fabric3.admin.interpreter.CommandParser;
@@ -45,25 +44,12 @@ import org.fabric3.admin.interpreter.parser.ParserFactory;
  * Default interpreter implementation.
  */
 public class InterpreterImpl implements Interpreter {
-    private static final String PROMPT = "\nf3>";
+    private static final String PROMPT_PREFIX = "\nf3 [";
     private static final String HELP = "help";
-    private static final String HELP_TEXT = "Type help <command> for more information: \n\n"
-            + "   authenticate (au) \n"
-            + "   back (b) \n"
-            + "   deploy (de) \n"
-            + "   follow (f) \n"
-            + "   get (g) \n"
-            + "   install (ins) \n"
-            + "   list (ls) \n"
-            + "   post (p) \n"
-            + "   profile (pf) \n"
-            + "   provision (pr) \n"
-            + "   quit (q) \n"
-            + "   status (st) \n"
-            + "   undeploy (ude) \n"
-            + "   uninstall (uin) \n"
-            + "   use \n"
-            + "   run (r) \n";
+    private static final String HELP_TEXT = "Type help <command> for more information: \n\n" + "   authenticate (au) \n" + "   back (b) \n"
+                                            + "   deploy (de) \n" + "   follow (f) \n" + "   get (g) \n" + "   install (ins) \n" + "   list (ls) \n"
+                                            + "   post (p) \n" + "   profile (pf) \n" + "   provision (pr) \n" + "   quit (q) \n" + "   status (st) \n"
+                                            + "   undeploy (ude) \n" + "   uninstall (uin) \n" + "   use \n" + "   run (r) \n";
 
     private DomainConnection domainConnection;
     private Settings settings;
@@ -88,7 +74,8 @@ public class InterpreterImpl implements Interpreter {
         try {
             ConsoleReader reader = createReader(in, out);
             String line;
-            while ((line = reader.readLine(PROMPT)) != null) {
+            String displayPrompt = PROMPT_PREFIX + configuration.getName() + "]>";
+            while ((line = reader.readLine(displayPrompt)) != null) {
                 if ("quit".equals(line) || "q".equals(line) || "exit".equals(line)) {
                     break;
                 } else if (line.trim().length() == 0) {
@@ -162,8 +149,8 @@ public class InterpreterImpl implements Interpreter {
     private ConsoleReader createReader(InputStream in, PrintStream out) throws IOException {
         ConsoleReader reader = new ConsoleReader(in, new OutputStreamWriter(out));
         List<Completer> completors = new ArrayList<>();
-        String[] commands =
-                {"authenticate", "back", "deploy", "follow", "get", "install", "list", "post", "profile", "provision", "status", "undeploy", "uninstall", "use", "run", "quit"};
+        String[] commands = {"authenticate", "back", "deploy", "follow", "get", "install", "list", "post", "profile", "provision", "status", "undeploy",
+                             "uninstall", "use", "run", "quit"};
         StringsCompleter simpleCompletor = new StringsCompleter(commands);
         completors.add(simpleCompletor);
         FileNameCompleter fileCompletor = new FileNameCompleter();
@@ -172,6 +159,5 @@ public class InterpreterImpl implements Interpreter {
         reader.addCompleter(argumentCompletor);
         return reader;
     }
-
 
 }
